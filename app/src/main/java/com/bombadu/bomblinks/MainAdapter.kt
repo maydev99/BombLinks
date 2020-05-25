@@ -39,7 +39,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainHolder>() {
 
     }
 
-    fun getMovieAt(position: Int) : LinkData? {
+    fun getLinkAt(position: Int) : LinkData? {
         return links[position]
     }
 

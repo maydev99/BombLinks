@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,10 +26,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupRecyclerView()
         getMovieList()
+        fetchSharedLink()
 
 
         floatingActionButton.setOnClickListener {
             startActivity(Intent(this, AddLinkActivity::class.java))
+        }
+    }
+
+    private fun fetchSharedLink() {
+        val receivedIntent = intent
+        val receivedAction = receivedIntent.action
+        val receivedType = receivedIntent.type
+        if (receivedAction.equals(Intent.ACTION_SEND)){
+            if (receivedType != null) {
+                if (receivedType.startsWith("text/")) {
+                    val receivedUrl = receivedIntent.getStringExtra(Intent.EXTRA_TEXT)
+                    intent = Intent(this, AddLinkActivity::class.java)
+                    intent.putExtra("url_key", receivedUrl)
+                    startActivity(intent)
+                }
+            }
         }
     }
 
@@ -50,12 +69,29 @@ class MainActivity : AppCompatActivity() {
             allLinks?.let { adapter.setLinks(it) }
         })
         adapter.onItemClick = { pos, view ->
-            val myLink = adapter.getMovieAt(pos)
+            val myLink = adapter.getLinkAt(pos)
             val myUrl = myLink!!.weburl
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(myUrl))
             startActivity(browserIntent)
 
         }
+
+        ItemTouchHelper(object :
+        ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.getLinkAt(viewHolder.adapterPosition)
+                    ?.let { linkViewModel.deleteLink(it) }
+                makeAToast("Link Deleted")
+            }
+        }).attachToRecyclerView(recycler_view)
 
     }
 
@@ -79,6 +115,14 @@ class MainActivity : AppCompatActivity() {
             }
             deleteDialog.show()
 
+        }
+
+        if (item.itemId == R.id.about) {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("BombLinks v1.0")
+            alertDialog.setMessage("by Michael May\nBombadu 2020")
+            alertDialog.setIcon(R.mipmap.ic_launcher)
+            alertDialog.show()
         }
         return super.onOptionsItemSelected(item)
     }

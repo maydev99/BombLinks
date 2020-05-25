@@ -13,12 +13,13 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+@Suppress("SENSELESS_COMPARISON")
 class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     private lateinit var url: String
     private lateinit var mPreview: Preview
     private lateinit var linkViewModel: LinkViewModel
-    
+
     companion object {
         private var myDescription = ""
         private var myTitle = ""
@@ -26,7 +27,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         private var mySource = ""
         private var myDate = ""
         private var myWebUrl = ""
-        
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +37,31 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         mPreview = findViewById(R.id.preview)
         linkViewModel = LinkViewModel(application)
 
+        val intent = intent
+        url = intent.getStringExtra("url_key") ?: ""
+        if (url != "") {
+            previewLink()
+        }
+
 
 
 
         preview_button.setOnClickListener {
+
+            if (url_edit_text.text.toString().trim().isBlank()) {
+                makeAToast("paste url")
+                return@setOnClickListener
+            }
             url = url_edit_text.text.toString()
-            mPreview.setListener(this)
-            mPreview.setData(url)
-            url_edit_text.text = null
+            previewLink()
 
         }
+    }
+
+    private fun previewLink() {
+        mPreview.setListener(this)
+        mPreview.setData(url)
+        url_edit_text.text = null
     }
 
     override fun onDataReady(preview: Preview?) {
@@ -53,7 +69,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
             //preview_view.setData(preview.link)
             mPreview.run {
                 setMessage(preview.link)
-                
+
                 myDescription = mPreview.description
                 myTitle = mPreview.title
                 myImageUrl = mPreview.imageLink
@@ -67,7 +83,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     private fun getDate(): String {
         val currentDate = LocalDateTime.now()
-        return  currentDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+        return currentDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
