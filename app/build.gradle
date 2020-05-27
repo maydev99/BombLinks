@@ -37,6 +37,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation "com.google.android.material:material:1.2.0-alpha02"
 
+    //Permission Handler
+    implementation 'com.nabinbhandari.android:permissions:3.8'
+
+    //Barcode Implementation
+    implementation 'com.budiyev.android:code-scanner:2.1.0'
+
     //Link Preview Implementations
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'io.github.ponnamkarthik:richlinkpreview:1.0.9'

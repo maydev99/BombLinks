@@ -11,4 +11,13 @@
 
     </item>
 
+    <item
+        android:id="@+id/qr_reader"
+        android:title="QR Reader"
+        android:icon="@drawable/ic_qr"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom">
+
+    </item>
+
 </menu>

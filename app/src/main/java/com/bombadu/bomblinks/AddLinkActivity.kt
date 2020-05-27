@@ -1,5 +1,8 @@
 package com.bombadu.bomblinks
 
+
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -7,11 +10,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
+import com.budiyev.android.codescanner.CodeScannerView
 import com.freesoulapps.preview.android.Preview
 import kotlinx.android.synthetic.main.activity_add_link.*
+import org.nibor.autolink.LinkExtractor
+import org.nibor.autolink.LinkType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.*
+
 
 @Suppress("SENSELESS_COMPARISON")
 class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
@@ -20,6 +28,8 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     private lateinit var mPreview: Preview
     private lateinit var linkViewModel: LinkViewModel
 
+
+
     companion object {
         private var myDescription = ""
         private var myTitle = ""
@@ -27,6 +37,8 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         private var mySource = ""
         private var myDate = ""
         private var myWebUrl = ""
+        private const val ADD_QR_SCAN = 1
+
 
     }
 
@@ -35,7 +47,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         setContentView(R.layout.activity_add_link)
 
         mPreview = findViewById(R.id.preview)
+        //val scannerView = findViewById<CodeScannerView>(R.id.scanView)
         linkViewModel = LinkViewModel(application)
+
 
         val intent = intent
         url = intent.getStringExtra("url_key") ?: ""
@@ -60,8 +74,22 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     private fun previewLink() {
         mPreview.setListener(this)
-        mPreview.setData(url)
+        mPreview.setData(extractUrl(url)) //Extract Url in correct format prior to preview
         url_edit_text.text = null
+    }
+
+    private fun extractUrl(myUrl: String): String {
+        val linkExtractor = LinkExtractor.builder()
+            .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW, LinkType.EMAIL))
+            .build()
+
+        val links = linkExtractor.extractLinks(myUrl)
+        val link = links.iterator().next()
+        link.type
+        link.beginIndex
+        link.endIndex
+        return myUrl.substring(link.beginIndex, link.endIndex)
+
     }
 
     override fun onDataReady(preview: Preview?) {
@@ -76,6 +104,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                 mySource = mPreview.siteName
                 myWebUrl = mPreview.link
                 myDate = getDate()
+
+
+
                 println("IMAGE URL: $myDate")
             }
         }
@@ -97,8 +128,34 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                 saveLink()
             }
         }
+
+        when (item.itemId) {
+            R.id.qr_reader -> {
+                startActivityForResult(
+                    Intent(this, QrScannerActivity::class.java),
+                    ADD_QR_SCAN
+                )
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ADD_QR_SCAN && resultCode == Activity.RESULT_OK && data != null) {
+            url = data.getStringExtra(QrScannerActivity.EXTRA_RESULT)
+            if (!url.contains("http")|| !url.contains("https")){
+                makeAToast("QR code does not contain link")
+            } else {
+                previewLink()
+            }
+
+        } else {
+            makeAToast("QR not scanned")
+        }
+    }
+
 
     private fun saveLink() {
         val newLink = LinkData(
@@ -119,6 +176,10 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     private fun makeAToast(tMessage: String) {
         Toast.makeText(this, tMessage, Toast.LENGTH_SHORT).show()
     }
+
+
 }
+
+
 
 
