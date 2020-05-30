@@ -4,13 +4,14 @@ package com.bombadu.bomblinks
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
-import com.budiyev.android.codescanner.CodeScannerView
 import com.freesoulapps.preview.android.Preview
 import kotlinx.android.synthetic.main.activity_add_link.*
 import org.nibor.autolink.LinkExtractor
@@ -21,7 +22,7 @@ import java.time.format.FormatStyle
 import java.util.*
 
 
-@Suppress("SENSELESS_COMPARISON")
+@Suppress("SENSELESS_COMPARISON", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     private lateinit var url: String
@@ -46,14 +47,15 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_link)
 
-        mPreview = findViewById(R.id.preview)
-        //val scannerView = findViewById<CodeScannerView>(R.id.scanView)
+        mPreview = findViewById(R.id.preview_view)
         linkViewModel = LinkViewModel(application)
 
 
         val intent = intent
         url = intent.getStringExtra("url_key") ?: ""
         if (url != "") {
+            preview_placeholder_text_view.visibility = View.INVISIBLE
+            mPreview.visibility = View.VISIBLE
             previewLink()
         }
 
@@ -67,6 +69,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                 return@setOnClickListener
             }
             url = url_edit_text.text.toString()
+
+            preview_placeholder_text_view.visibility = View.INVISIBLE
+            mPreview.visibility = View.VISIBLE
             previewLink()
 
         }
@@ -75,6 +80,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     private fun previewLink() {
         mPreview.setListener(this)
         mPreview.setData(extractUrl(url)) //Extract Url in correct format prior to preview
+
         url_edit_text.text = null
     }
 
@@ -93,23 +99,33 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     }
 
     override fun onDataReady(preview: Preview?) {
-        if (preview != null) {
-            //preview_view.setData(preview.link)
-            mPreview.run {
-                setMessage(preview.link)
-
-                myDescription = mPreview.description
-                myTitle = mPreview.title
-                myImageUrl = mPreview.imageLink
-                mySource = mPreview.siteName
-                myWebUrl = mPreview.link
-                myDate = getDate()
 
 
 
-                println("IMAGE URL: $myDate")
+        mPreview.run {
+
+            try {
+                if (mPreview != null) {
+                    mPreview.setMessage(preview!!.link)
+                    if(description != null && myTitle != null && myImageUrl
+                        != null && mySource != null && myWebUrl != null) {
+                        myDescription = mPreview.description
+                        myTitle = preview.title
+                        myImageUrl = preview.imageLink
+                        mySource = preview.siteName
+                        myWebUrl = preview.link
+                        myDate = getDate()
+
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+
+
         }
+
+        println("NEW: $myImageUrl")
     }
 
     private fun getDate(): String {
@@ -126,6 +142,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         when (item.itemId) {
             R.id.save_link -> {
                 saveLink()
+                //makeAToast(myImageUrl)
             }
         }
 
@@ -145,7 +162,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
         if (requestCode == ADD_QR_SCAN && resultCode == Activity.RESULT_OK && data != null) {
             url = data.getStringExtra(QrScannerActivity.EXTRA_RESULT)
-            if (!url.contains("http")|| !url.contains("https")){
+            if (!url.contains("http") || !url.contains("https")) {
                 makeAToast("QR code does not contain link")
             } else {
                 previewLink()

@@ -35,7 +35,12 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainHolder>() {
 
         val imageUrl = currentLink.imageurl
         val myImageView = holder.imageViewImage
-        Picasso.get().load(imageUrl).into(myImageView)
+        if (imageUrl == "") {
+            Picasso.get().load(R.drawable.noimage).resize(1280,960).centerCrop().into(myImageView)
+        } else {
+            Picasso.get().load(imageUrl).into(myImageView)
+        }
+
 
     }
 
