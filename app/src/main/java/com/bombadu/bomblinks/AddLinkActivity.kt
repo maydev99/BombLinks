@@ -4,16 +4,17 @@ package com.bombadu.bomblinks
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
 import com.freesoulapps.preview.android.Preview
 import kotlinx.android.synthetic.main.activity_add_link.*
+import kotlinx.android.synthetic.main.category_item.*
 import org.nibor.autolink.LinkExtractor
 import org.nibor.autolink.LinkType
 import java.time.LocalDateTime
@@ -28,6 +29,8 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     private lateinit var url: String
     private lateinit var mPreview: Preview
     private lateinit var linkViewModel: LinkViewModel
+    private val thingList = mutableListOf<String>()
+    private val catList = mutableListOf<String>()
 
 
 
@@ -38,6 +41,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         private var mySource = ""
         private var myDate = ""
         private var myWebUrl = ""
+        private var myCategory = ""
         private const val ADD_QR_SCAN = 1
 
 
@@ -54,8 +58,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         val intent = intent
         url = intent.getStringExtra("url_key") ?: ""
         if (url != "") {
-            preview_placeholder_text_view.visibility = View.INVISIBLE
-            mPreview.visibility = View.VISIBLE
+            prepPreview()
             previewLink()
         }
 
@@ -70,14 +73,31 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
             }
             url = url_edit_text.text.toString()
 
-            preview_placeholder_text_view.visibility = View.INVISIBLE
-            mPreview.visibility = View.VISIBLE
+            prepPreview()
             previewLink()
 
         }
+
+
+    }
+
+    private fun getMovieList() {
+
+
+    }
+
+
+
+
+
+    private fun prepPreview(){
+        preview_placeholder_text_view.visibility = View.INVISIBLE
+        mPreview.visibility = View.VISIBLE
     }
 
     private fun previewLink() {
+        preview_placeholder_text_view.visibility = View.INVISIBLE
+        mPreview.visibility = View.VISIBLE
         mPreview.setListener(this)
         mPreview.setData(extractUrl(url)) //Extract Url in correct format prior to preview
 
@@ -115,6 +135,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                         mySource = preview.siteName
                         myWebUrl = preview.link
                         myDate = getDate()
+                        //myCategory = categoryACTextView.text.toString() get this on saveLink
 
                     }
                 }
@@ -142,7 +163,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         when (item.itemId) {
             R.id.save_link -> {
                 saveLink()
-                //makeAToast(myImageUrl)
+
             }
         }
 
@@ -152,6 +173,12 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                     Intent(this, QrScannerActivity::class.java),
                     ADD_QR_SCAN
                 )
+            }
+        }
+
+        when (item.itemId) {
+            R.id.categorize -> {
+
             }
         }
         return super.onOptionsItemSelected(item)
@@ -165,6 +192,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
             if (!url.contains("http") || !url.contains("https")) {
                 makeAToast("QR code does not contain link")
             } else {
+                prepPreview()
                 previewLink()
             }
 
@@ -175,16 +203,19 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
 
     private fun saveLink() {
+        myCategory = categoryACTextView.text.toString()
         val newLink = LinkData(
             myDate,
             myImageUrl,
             myDescription,
             myTitle,
             mySource,
-            myWebUrl
+            myWebUrl,
+            myCategory
         )
 
         linkViewModel.insertLink(newLink)
+
         makeAToast("Link Saved")
         finish()
 

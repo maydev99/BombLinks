@@ -20,4 +20,13 @@
 
     </item>
 
+    <item
+        android:id="@+id/categorize"
+        android:title="Categorize"
+        android:orderInCategory="5"
+        android:icon="@drawable/ic_category"
+        app:showAsAction="ifRoom">
+
+    </item>
+
 </menu>

@@ -11,9 +11,15 @@ class LinkData(
     @ColumnInfo(name = "description") var description:String,
     @ColumnInfo(name = "title") var title:String,
     @ColumnInfo(name = "source") var source: String,
-    @ColumnInfo(name = "web_url") var weburl: String
+    @ColumnInfo(name = "web_url") var weburl: String,
+    @ColumnInfo(name = "category") var category: String
 
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
+
+
+
 }
+
+data class CategoryMinimal(val category: String)

@@ -18,4 +18,16 @@
 
     </item>
 
+    <item
+        android:id="@+id/category"
+        android:title="Category"
+        android:orderInCategory="30"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_category">
+
+    </item>
+
+
+
+
 </menu>

@@ -1,33 +1,35 @@
 package com.bombadu.bomblinks
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var linkViewModel: LinkViewModel
     private val adapter = MainAdapter()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupRecyclerView()
-        getMovieList()
+        getLinkList()
         fetchSharedLink()
-
 
         floatingActionButton.setOnClickListener {
             startActivity(Intent(this, AddLinkActivity::class.java))
@@ -50,7 +52,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getMovieList() {
+    private fun getLinkListByCategory(myCategory: String) {
+
+        linkViewModel.getLinksByCategory(myCategory).observe(this,
+        Observer { list ->
+            list?.let {
+                adapter.setLinks(it)
+                adapter.notifyDataSetChanged()
+            }
+        })
+
+    }
+
+    private fun getLinkList() {
         linkViewModel.getAllLinks().observe(this,
         Observer { list ->
             list?.let {
@@ -101,20 +115,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.delete_all) {
-            val deleteDialog = AlertDialog.Builder(this)
-            deleteDialog.setTitle("Delete All Records")
-            deleteDialog.setMessage("Are you sure?")
-            deleteDialog.setIcon(R.mipmap.ic_launcher)
-            deleteDialog.setPositiveButton("delete") { _, _ ->
-                linkViewModel.deleteAllLinks()
-                makeAToast("All Data Deleted")
-            }
-            deleteDialog.setNegativeButton("cancel") { _, _ ->
-                //Closes Dialog
-            }
-            deleteDialog.show()
+        when (item.itemId) {
+            R.id.delete_all -> {
+                val deleteDialog = AlertDialog.Builder(this)
+                deleteDialog.setTitle("Delete All Records")
+                deleteDialog.setMessage("Are you sure?")
+                deleteDialog.setIcon(R.mipmap.ic_launcher)
+                deleteDialog.setPositiveButton("delete") { _, _ ->
+                    linkViewModel.deleteAllLinks()
+                    makeAToast("All Data Deleted")
+                }
+                deleteDialog.setNegativeButton("cancel") { _, _ ->
+                    //Closes Dialog
+                }
+                deleteDialog.show()
 
+            }
         }
 
         if (item.itemId == R.id.about) {
@@ -124,12 +140,59 @@ class MainActivity : AppCompatActivity() {
             alertDialog.setIcon(R.mipmap.ic_launcher)
             alertDialog.show()
         }
+
+        when (item.itemId) {
+            R.id.category -> {
+                showSortDialog()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun showSortDialog() {
+        val catAdapter = CategoryAdapter()
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.category_layout_dialog)
+        dialog.show()
+
+        val recView = dialog.findViewById<RecyclerView>(R.id.category_recycler_view)
+        recView.layoutManager = LinearLayoutManager(this)
+        recView.setHasFixedSize(true)
+        recView.adapter = catAdapter
+        this.linkViewModel = ViewModelProvider(this).get(LinkViewModel::class.java)
+        linkViewModel.getAllCategories().observe(this, Observer { allCategories ->
+            allCategories?.let { catAdapter.setCategories(it) }
+        })
+
+        linkViewModel.getAllCategories().observe(this,
+            Observer { list ->
+                list?.let {
+                    catAdapter.setCategories(it)
+                    catAdapter.notifyDataSetChanged()
+                }
+            })
+
+        catAdapter.onItemClick = { pos, _ ->
+            val myCategory = catAdapter.getCategoryAt(pos)
+            getLinkListByCategory(myCategory!!.category)
+
+
+            dialog.cancel()
+        }
+
+
+    }
+
+
+
 
     private fun makeAToast(tMessage: String) {
         Toast.makeText(this, tMessage, Toast.LENGTH_SHORT).show()
     }
+
+
 
 
 }

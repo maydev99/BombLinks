@@ -13,6 +13,7 @@ abstract class LinkDatabase: RoomDatabase() {
 
     abstract  fun linkDao(): LinkDao
 
+
     private class LinkDatabaseCallback(
         private val scope: CoroutineScope
     ) : RoomDatabase.Callback() {

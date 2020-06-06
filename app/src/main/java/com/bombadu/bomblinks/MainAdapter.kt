@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bombadu.bomblinks.db.CategoryMinimal
 import com.bombadu.bomblinks.db.LinkData
 import com.squareup.picasso.Picasso
 
@@ -52,6 +53,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainHolder>() {
         this.links = links
         notifyDataSetChanged()
     }
+
+
 
 
 
