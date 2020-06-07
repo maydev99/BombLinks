@@ -10,11 +10,6 @@ import com.bombadu.bomblinks.db.LinkData
 class LinkRepository(private val linkDao: LinkDao) {
     val allLinks: LiveData<List<LinkData>> = linkDao.getAllLinks()
     val allCategories: LiveData<List<CategoryMinimal>> = linkDao.getCategories()
-    //val allLinksByCategory: LiveData<List<LinkData>> = linkDao.getLinksByCategory(category)
-
-    /*fun allLinksByCategory(category: String) : LiveData<List<LinkData>> {
-        return linkDao.getLinksByCategory(category)
-    }*/
 
     fun insertLink(linkData: LinkData) {
         InsertLinkAsyncTask(

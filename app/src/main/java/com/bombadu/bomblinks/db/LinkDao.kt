@@ -20,7 +20,7 @@ interface LinkDao {
     @Query("SELECT * FROM link_table ORDER BY id ASC")
     fun getAllLinks(): LiveData<List<LinkData>>
 
-    @Query("SELECT DISTINCT category FROM link_table")
+    @Query("SELECT DISTINCT category FROM link_table ORDER BY category ASC")
     fun getCategories(): LiveData<List<CategoryMinimal>>
 
     @Query("SELECT * FROM link_table WHERE category = :category")

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -157,7 +158,14 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(R.layout.category_layout_dialog)
         dialog.show()
 
+
+
         val recView = dialog.findViewById<RecyclerView>(R.id.category_recycler_view)
+        val showAllButton = dialog.findViewById<Button>(R.id.allCategoriesButton)
+        showAllButton.setOnClickListener {
+            getLinkList()
+            dialog.cancel()
+        }
         recView.layoutManager = LinearLayoutManager(this)
         recView.setHasFixedSize(true)
         recView.adapter = catAdapter

@@ -1,7 +1,6 @@
 package com.bombadu.bomblinks.viewModel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -15,13 +14,6 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: LinkRepository
     private val allLinks: LiveData<List<LinkData>>
     private val allCategories: LiveData<List<CategoryMinimal>>
-    //var query = MutableLiveData<String>()
-    private val linksByCategory: LiveData<List<LinkData>>
-    private val mCategory = ""
-    //private fun temp(query: String) = repository.allLinksByCategory(query)
-
-
-
 
 
     init {
@@ -29,12 +21,7 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
         repository = LinkRepository(linkDao)
         allLinks = repository.allLinks
         allCategories = repository.allCategories
-        linksByCategory = repository.allLinksByCategory(mCategory)
-        Log.i("CATEGORY", "$mCategory")
-
     }
-
-
 
     fun insertLink(linkData: LinkData) {
         repository.insertLink(linkData)
@@ -62,7 +49,10 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getLinksByCategory(myCategory: String): LiveData<List<LinkData>> {
-        return linksByCategory
+        return repository.allLinksByCategory(myCategory)
     }
 
+
+
 }
+

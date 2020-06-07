@@ -81,14 +81,6 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     }
 
-    private fun getMovieList() {
-
-
-    }
-
-
-
-
 
     private fun prepPreview(){
         preview_placeholder_text_view.visibility = View.INVISIBLE
