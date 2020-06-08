@@ -7,20 +7,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.viewModel.LinkViewModel
 import com.freesoulapps.preview.android.Preview
 import kotlinx.android.synthetic.main.activity_add_link.*
-import kotlinx.android.synthetic.main.category_item.*
 import org.nibor.autolink.LinkExtractor
 import org.nibor.autolink.LinkType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
+import androidx.lifecycle.Observer
+import com.bombadu.bomblinks.util.Utils
 
 
 @Suppress("SENSELESS_COMPARISON", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -29,9 +32,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     private lateinit var url: String
     private lateinit var mPreview: Preview
     private lateinit var linkViewModel: LinkViewModel
-    private val thingList = mutableListOf<String>()
     private val catList = mutableListOf<String>()
-
 
 
     companion object {
@@ -53,6 +54,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
         mPreview = findViewById(R.id.preview_view)
         linkViewModel = LinkViewModel(application)
+
+
+        makeCategoryList()
 
 
         val intent = intent
@@ -82,21 +86,22 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
     }
 
 
-    private fun prepPreview(){
+    private fun prepPreview() {
         preview_placeholder_text_view.visibility = View.INVISIBLE
         mPreview.visibility = View.VISIBLE
     }
 
     private fun previewLink() {
+        val utils = Utils()
         preview_placeholder_text_view.visibility = View.INVISIBLE
         mPreview.visibility = View.VISIBLE
         mPreview.setListener(this)
-        mPreview.setData(extractUrl(url)) //Extract Url in correct format prior to preview
+        mPreview.setData(utils.extractUrl(url)) //Extract Url in correct format prior to preview
 
         url_edit_text.text = null
     }
 
-    private fun extractUrl(myUrl: String): String {
+    /*private fun extractUrl(myUrl: String): String {
         val linkExtractor = LinkExtractor.builder()
             .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW, LinkType.EMAIL))
             .build()
@@ -108,10 +113,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         link.endIndex
         return myUrl.substring(link.beginIndex, link.endIndex)
 
-    }
+    }*/
 
     override fun onDataReady(preview: Preview?) {
-
 
 
         mPreview.run {
@@ -119,8 +123,9 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
             try {
                 if (mPreview != null) {
                     mPreview.setMessage(preview!!.link)
-                    if(description != null && myTitle != null && myImageUrl
-                        != null && mySource != null && myWebUrl != null) {
+                    if (description != null && myTitle != null && myImageUrl
+                        != null && mySource != null && myWebUrl != null
+                    ) {
                         myDescription = mPreview.description
                         myTitle = preview.title
                         myImageUrl = preview.imageLink
@@ -217,8 +222,32 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         Toast.makeText(this, tMessage, Toast.LENGTH_SHORT).show()
     }
 
+    private fun makeCategoryList() {
+        this.linkViewModel = ViewModelProvider(this).get(LinkViewModel::class.java)
+        linkViewModel.getAllCategories().observe(this,
+            Observer { list ->
+                list?.let {
+                    for (value in it){
+                        catList.add(value.category)
+                    }
+
+                    val catAdapter =
+                        ArrayAdapter(this, android.R.layout.select_dialog_item, catList)
+
+                    val categoryTextView = findViewById<AutoCompleteTextView>(R.id.categoryACTextView)
+                    categoryTextView.threshold = 1
+                    categoryTextView.setAdapter(catAdapter)
+                }
+            })
+
+
+
+
+    }
 
 }
+
+
 
 
 
