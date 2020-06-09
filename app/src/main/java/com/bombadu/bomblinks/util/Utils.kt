@@ -4,7 +4,7 @@ import org.nibor.autolink.LinkExtractor
 import org.nibor.autolink.LinkType
 import java.util.*
 
-class Utils {
+class Utils  {
 
     fun extractUrl(myUrl: String): String {
         val linkExtractor = LinkExtractor.builder()
@@ -19,4 +19,7 @@ class Utils {
         return myUrl.substring(link.beginIndex, link.endIndex)
 
     }
+
+
+
 }

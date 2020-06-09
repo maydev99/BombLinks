@@ -11,19 +11,16 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bombadu.bomblinks.db.LinkData
+import com.bombadu.bomblinks.util.Utils
 import com.bombadu.bomblinks.viewModel.LinkViewModel
 import com.freesoulapps.preview.android.Preview
 import kotlinx.android.synthetic.main.activity_add_link.*
-import org.nibor.autolink.LinkExtractor
-import org.nibor.autolink.LinkType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
-import androidx.lifecycle.Observer
-import com.bombadu.bomblinks.util.Utils
 
 
 @Suppress("SENSELESS_COMPARISON", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -42,7 +39,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         private var mySource = ""
         private var myDate = ""
         private var myWebUrl = ""
-        private var myCategory = ""
+        private var myCategory = "No Category"
         private const val ADD_QR_SCAN = 1
 
 
@@ -93,27 +90,12 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
     private fun previewLink() {
         val utils = Utils()
-        preview_placeholder_text_view.visibility = View.INVISIBLE
-        mPreview.visibility = View.VISIBLE
         mPreview.setListener(this)
         mPreview.setData(utils.extractUrl(url)) //Extract Url in correct format prior to preview
 
         url_edit_text.text = null
     }
 
-    /*private fun extractUrl(myUrl: String): String {
-        val linkExtractor = LinkExtractor.builder()
-            .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW, LinkType.EMAIL))
-            .build()
-
-        val links = linkExtractor.extractLinks(myUrl)
-        val link = links.iterator().next()
-        link.type
-        link.beginIndex
-        link.endIndex
-        return myUrl.substring(link.beginIndex, link.endIndex)
-
-    }*/
 
     override fun onDataReady(preview: Preview?) {
 
@@ -173,11 +155,6 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
             }
         }
 
-        when (item.itemId) {
-            R.id.categorize -> {
-
-            }
-        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -227,20 +204,19 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         linkViewModel.getAllCategories().observe(this,
             Observer { list ->
                 list?.let {
-                    for (value in it){
+                    for (value in it) {
                         catList.add(value.category)
                     }
 
                     val catAdapter =
                         ArrayAdapter(this, android.R.layout.select_dialog_item, catList)
 
-                    val categoryTextView = findViewById<AutoCompleteTextView>(R.id.categoryACTextView)
+                    val categoryTextView =
+                        findViewById<AutoCompleteTextView>(R.id.categoryACTextView)
                     categoryTextView.threshold = 1
                     categoryTextView.setAdapter(catAdapter)
                 }
             })
-
-
 
 
     }

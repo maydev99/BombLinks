@@ -5,7 +5,7 @@
     <item
         android:id="@+id/save_link"
         android:title="Save Link"
-        android:icon="@drawable/ic_save"
+        android:icon="@drawable/ic_check"
         android:orderInCategory="40"
         app:showAsAction="ifRoom">
 
@@ -20,13 +20,6 @@
 
     </item>
 
-    <item
-        android:id="@+id/categorize"
-        android:title="Categorize"
-        android:orderInCategory="5"
-        android:icon="@drawable/ic_category"
-        app:showAsAction="ifRoom">
 
-    </item>
 
 </menu>

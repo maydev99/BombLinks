@@ -73,21 +73,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_input_layout" />
 
-    <AutoCompleteTextView
-        android:id="@+id/categoryACTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:inputType="textCapWords"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:maxLines="1"
-        android:layout_marginTop="16dp"
-        android:textSize="18sp"
-        android:text="No Category"
+    <TextView
+        android:id="@+id/enterCatTextView"
+        android:layout_width="356dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="32dp"
+        android:text="Enter a Category"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/categoryACTextView"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="@+id/categoryACTextView"
         app:layout_constraintTop_toBottomOf="@+id/preview_placeholder_text_view" />
 
+    <AutoCompleteTextView
+        android:id="@+id/categoryACTextView"
+        android:layout_width="370dp"
+        android:layout_height="50dp"
+        android:hint="default: No Category"
+        android:inputType="textCapWords"
+        android:maxLines="1"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/preview_view"
+        app:layout_constraintStart_toStartOf="@+id/preview_view"
+        app:layout_constraintTop_toBottomOf="@+id/enterCatTextView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
