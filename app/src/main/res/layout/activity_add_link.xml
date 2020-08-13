@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/add_link_activity"
     tools:context=".AddLinkActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="250dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
@@ -21,24 +22,22 @@
             android:id="@+id/url_edit_text"
             android:layout_width="220dp"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
             android:drawableEnd="@drawable/ic_link"
             android:hint="Paste URL" />
 
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <Button
         android:id="@+id/preview_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="Preview"
         app:layout_constraintBottom_toBottomOf="@+id/text_input_layout"
         app:layout_constraintStart_toEndOf="@+id/text_input_layout"
         app:layout_constraintTop_toTopOf="@+id/text_input_layout"
-        app:layout_constraintVertical_bias="0.611" />
-
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.freesoulapps.preview.android.Preview
         android:id="@+id/preview_view"
@@ -77,17 +76,17 @@
         android:id="@+id/enterCatTextView"
         android:layout_width="356dp"
         android:layout_height="19dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:text="Enter a Category"
         android:textColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="@+id/categoryACTextView"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/categoryACTextView"
         app:layout_constraintTop_toBottomOf="@+id/preview_placeholder_text_view" />
 
     <AutoCompleteTextView
         android:id="@+id/categoryACTextView"
-        android:layout_width="370dp"
+        android:layout_width="320dp"
         android:layout_height="50dp"
         android:hint="default: No Category"
         android:inputType="textCapWords"

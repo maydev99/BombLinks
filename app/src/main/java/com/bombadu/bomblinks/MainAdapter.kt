@@ -53,11 +53,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainHolder>() {
         this.links = links
         notifyDataSetChanged()
     }
-
-
-
-
-
+    
     inner class MainHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var textViewDate: TextView = itemView.findViewById(R.id.card_date_text_view)
         var textViewTitle: TextView = itemView.findViewById(R.id.card_title_text_view)

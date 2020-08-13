@@ -4,6 +4,7 @@ package com.bombadu.bomblinks
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -41,6 +42,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
         private var myWebUrl = ""
         private var myCategory = "No Category"
         private const val ADD_QR_SCAN = 1
+        private const val TAG = "MyTag"
 
 
     }
@@ -70,6 +72,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
 
             if (url_edit_text.text.toString().trim().isBlank()) {
                 makeAToast("paste url")
+                Log.d(TAG, "MyPreview: TheButton")
                 return@setOnClickListener
             }
             url = url_edit_text.text.toString()
@@ -114,6 +117,7 @@ class AddLinkActivity : AppCompatActivity(), Preview.PreviewListener {
                         mySource = preview.siteName
                         myWebUrl = preview.link
                         myDate = getDate()
+
                         //myCategory = categoryACTextView.text.toString() get this on saveLink
 
                     }
