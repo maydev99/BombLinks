@@ -1,15 +1,15 @@
 package com.bombadu.bomblinks.viewModel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.bombadu.bomblinks.db.CategoryMinimal
 import com.bombadu.bomblinks.db.LinkData
 import com.bombadu.bomblinks.db.LinkDatabase
+import com.bombadu.bomblinks.firebase.BackupData
+import com.bombadu.bomblinks.firebase.RestoreData
 import com.bombadu.bomblinks.repository.LinkRepository
 
-class LinkViewModel(application: Application) : AndroidViewModel(application) {
+class LinkViewModel(application: Application) : AndroidViewModel(application), ViewModelStoreOwner {
 
     private val repository: LinkRepository
     private val allLinks: LiveData<List<LinkData>>
@@ -21,6 +21,18 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
         repository = LinkRepository(linkDao)
         allLinks = repository.allLinks
         allCategories = repository.allCategories
+    }
+
+    fun restoreFromFirebase() {
+        val restoreData = RestoreData(getApplication())
+        restoreData.getDataFromFBInsertIntoRoom()
+    }
+
+    fun backupToFirebase() {
+        val backupData = BackupData(allLinks)
+        backupData.getRoomDataAddToFB()
+
+
     }
 
     fun insertLink(linkData: LinkData) {
@@ -52,6 +64,9 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
         return repository.allLinksByCategory(myCategory)
     }
 
+    override fun getViewModelStore(): ViewModelStore {
+        TODO("Not yet implemented")
+    }
 
 
 }

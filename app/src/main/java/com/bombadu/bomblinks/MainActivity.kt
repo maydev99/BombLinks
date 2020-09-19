@@ -21,7 +21,7 @@ import com.bombadu.bomblinks.viewModel.LinkViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
     lateinit var linkViewModel: LinkViewModel
     private val adapter = MainAdapter()
 
@@ -146,6 +146,22 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.category -> {
                 showSortDialog()
+            }
+        }
+
+
+        when (item.itemId) {
+            R.id.action_backup -> {
+                Log.d("TEST", "Clicked")
+                linkViewModel.backupToFirebase()
+
+            }
+        }
+
+        when(item.itemId) {
+            R.id.action_restore -> {
+                Log.d("TEST", "RESTORE CLICKED")
+                linkViewModel.restoreFromFirebase()
             }
         }
         return super.onOptionsItemSelected(item)

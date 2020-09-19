@@ -6,10 +6,19 @@ import com.bombadu.bomblinks.db.CategoryMinimal
 
 import com.bombadu.bomblinks.db.LinkDao
 import com.bombadu.bomblinks.db.LinkData
+import com.bombadu.bomblinks.firebase.BackupData
 
 class LinkRepository(private val linkDao: LinkDao) {
     val allLinks: LiveData<List<LinkData>> = linkDao.getAllLinks()
     val allCategories: LiveData<List<CategoryMinimal>> = linkDao.getCategories()
+
+
+
+    fun backupToFirebase() {
+        val backupData: BackupData = BackupData(allLinks)
+        backupData.getRoomDataAddToFB()
+    }
+
 
     fun insertLink(linkData: LinkData) {
         InsertLinkAsyncTask(
@@ -40,6 +49,14 @@ class LinkRepository(private val linkDao: LinkDao) {
     fun allLinksByCategory(category: String): LiveData<List<LinkData>> {
         return linkDao.getLinksByCategory(category)
     }
+
+    /*private class BackupToFirebaseAsyncTask(val linkDao: LinkDao) : AsyncTask<LinkData, Unit, Unit>() {
+        override fun doInBackground(vararg p0: LinkData?) {
+            val backupData = BackupData(linkDao)
+            backupData.getRoomDataAddToFB()
+        }
+
+    }*/
 
     private class InsertLinkAsyncTask(val linkDao: LinkDao) : AsyncTask<LinkData, Unit, Unit>(){
         override fun doInBackground(vararg linkData: LinkData?) {

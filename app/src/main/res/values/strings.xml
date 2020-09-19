@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BombLinks</string>
+    <string name="backup_data">Backup Data</string>
+    <string name="restore_data">Restore Data</string>
 </resources>
